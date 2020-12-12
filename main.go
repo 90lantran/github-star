@@ -15,6 +15,7 @@ func getStars(w http.ResponseWriter, r *http.Request) {
 
 	// list all organizations for user "willnorris"
 	orgs, _, err := client.Organizations.List(context.Background(), "willnorris", nil)
+
 	if err != nil {
 		fmt.Printf("Cannot call go-github %v", err)
 	}
