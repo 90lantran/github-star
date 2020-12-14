@@ -11,7 +11,6 @@ import (
 
 	"github.com/google/go-github/github"
 	"github.com/gorilla/mux"
-	"golang.org/x/oauth2"
 )
 
 type request struct {
@@ -42,12 +41,13 @@ func getStars(w http.ResponseWriter, r *http.Request) {
 
 	// should be in app.go
 	ctx := context.Background()
-	ts := oauth2.StaticTokenSource(
-		&oauth2.Token{AccessToken: "08dcd33b87acba14d8630efbf2ae2736d885ad53"},
-	)
-	tc := oauth2.NewClient(ctx, ts)
+	// ts := oauth2.StaticTokenSource(
+	// 	&oauth2.Token{AccessToken: "08dcd33b87acba14d8630efbf2ae2736d885ad53"},
+	// )
+	//tc := oauth2.NewClient(ctx, ts)
 
-	client := github.NewClient(tc)
+	//client := github.NewClient(tc)
+	client := github.NewClient(nil)
 
 	opt := &github.RepositoryListByOrgOptions{
 		ListOptions: github.ListOptions{PerPage: 30},
@@ -78,7 +78,7 @@ func getStars(w http.ResponseWriter, r *http.Request) {
 			if err == nil {
 				fmt.Printf("Find all repos for %s\n", token[0])
 				allRepos = results
-				seenOrgs[token[0]] = allRepos
+				seenOrgs[token[0]] = results
 
 			} else {
 				// invalid org
@@ -88,10 +88,6 @@ func getStars(w http.ResponseWriter, r *http.Request) {
 			}
 
 		}
-
-		// for i, r := range allRepos {
-		// 	fmt.Printf("%d. %v\n", i+1, r.GetName())
-		// }
 
 		if count := getStarsForRepo(allRepos, token[1]); count != -1 {
 			validRepos[input] = count
@@ -115,7 +111,7 @@ func listAllReposForAnOrg(ctx context.Context, orgName string, client *github.Cl
 	for {
 		repos, resp, err := client.Repositories.ListByOrg(ctx, orgName, opt)
 		if err != nil {
-			fmt.Printf("the organization %s does not exist %v", orgName, err)
+			fmt.Printf("the organization %s does not exist %v\n", orgName, err)
 			return nil, errors.New("the organization does not exist")
 		}
 		allRepos = append(allRepos, repos...)
@@ -129,24 +125,11 @@ func listAllReposForAnOrg(ctx context.Context, orgName string, client *github.Cl
 }
 
 func getStarsForRepo(allRepos []*github.Repository, repoName string) int {
-	var count int
-	// var allRepos []*github.Repository
-	// for {
-	// 	repos, resp, err := client.Repositories.ListByOrg(ctx, orgName, opt)
-	// 	if err != nil {
-	// 		fmt.Printf("The organization does not exist %v", err)
-	// 		return -1
-	// 	}
-	// 	allRepos = append(allRepos, repos...)
-	// 	if resp.NextPage == 0 {
-	// 		break
-	// 	}
-	// 	opt.Page = resp.NextPage
-	// }
+	//fmt.Printf("repos %v", allRepos)
 
 	for _, repo := range allRepos {
 		if repo.GetName() == repoName {
-			count += repo.GetStargazersCount()
+			count := repo.GetStargazersCount()
 			fmt.Printf("Found: %s\n", repoName)
 			return count
 		}
