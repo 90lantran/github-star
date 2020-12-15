@@ -1,17 +1,12 @@
 version: '3.3'
 
-services:
-	server:
-		image: golang:latest
-		container_name: server
-	networks:
-		- local-network
-	volumes:
-		- .:/go/src/github.com/90lantran/github-star
-	working_dir: /go/src/github.com/90lantran/github-star
-	ports:
-		8080:8080
-	command: go run main.go
-      
-networks:
-	local-network
+services: 
+    server:
+        image: golang:latest
+        container_name: server
+        volumes:
+            - .:/go/src/github.com/90lantran/github-star
+        working_dir: /go/src/github.com/90lantran/github-star
+        ports:
+            - 8080:8080
+        command: go run main.go
