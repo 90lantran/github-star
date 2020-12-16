@@ -9,4 +9,4 @@ services:
         working_dir: /go/src/github.com/90lantran/github-star/cmd
         ports:
             - 8080:8080
-        command: go run *.go
+        command: go run *.go 
