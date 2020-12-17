@@ -8,13 +8,13 @@ import (
 )
 
 // Server represents the server side component of the API
-type Server struct {
+type server struct {
 	serverStarted bool
 	// DB connection  if we want to extend
 }
 
 // StartServer starts the server
-func (s *Server) StartServer() {
+func (s *server) startServer() {
 	s.serverStarted = true
 	router := route.GetRouter()
 	log.Fatal(http.ListenAndServe(":8080", router))

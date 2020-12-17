@@ -12,6 +12,6 @@ func main() {
 	// router.HandleFunc("/get-stars", getStars).Methods("POST")
 	// //router.HandleFunc("/getStars", getStars)
 	// log.Fatal(http.ListenAndServe(":8080", router))
-	server := Server{}
-	server.StartServer()
+	server := server{}
+	server.startServer()
 }

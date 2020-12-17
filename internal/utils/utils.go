@@ -42,8 +42,6 @@ func ListAllReposForAnOrg(gitService model.GithubService, orgName string) ([]*gi
 }
 
 func GetStarsForRepo(allRepos []*github.Repository, repoName string) int {
-	//fmt.Printf("repos %v", allRepos)
-
 	for _, repo := range allRepos {
 		if repo.GetName() == repoName {
 			count := repo.GetStargazersCount()
