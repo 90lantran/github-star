@@ -11,9 +11,9 @@ type Request struct {
 }
 
 type Response struct {
-	TotalStars   int            `json:"totalStars,omitempty"`
-	InvalidRepos []string       `json:"invalidRepos,omitempty"`
-	ValidRepos   map[string]int `json:"validRepos,omitempty"`
+	TotalStars   int64            `json:"totalStars,omitempty"`
+	InvalidRepos []string         `json:"invalidRepos,omitempty"`
+	ValidRepos   map[string]int64 `json:"validRepos,omitempty"`
 }
 
 type GithubService struct {

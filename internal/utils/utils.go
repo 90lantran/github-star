@@ -2,8 +2,6 @@ package utils
 
 import (
 	"encoding/json"
-	"errors"
-	"fmt"
 	"net/http"
 
 	"github.com/google/go-github/github"
@@ -17,7 +15,6 @@ func RespondWithError(w http.ResponseWriter, code int, message string) {
 
 func RespondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
 	response, _ := json.Marshal(payload)
-
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
 	w.Write(response)
@@ -28,8 +25,7 @@ func ListAllReposForAnOrg(gitService model.GithubService, orgName string) ([]*gi
 	for {
 		repos, resp, err := gitService.Client.Repositories.ListByOrg(gitService.Ctx, orgName, gitService.Opt)
 		if err != nil {
-			fmt.Printf("the organization %s does not exist %v\n", orgName, err)
-			return nil, errors.New("the organization does not exist")
+			return nil, err
 		}
 		allRepos = append(allRepos, repos...)
 		if resp.NextPage == 0 {
@@ -41,12 +37,11 @@ func ListAllReposForAnOrg(gitService model.GithubService, orgName string) ([]*gi
 
 }
 
-func GetStarsForRepo(allRepos []*github.Repository, repoName string) int {
+func GetStarsForRepo(allRepos []*github.Repository, repoName string) int64 {
 	for _, repo := range allRepos {
 		if repo.GetName() == repoName {
 			count := repo.GetStargazersCount()
-			fmt.Printf("Found: %s\n", repoName)
-			return count
+			return int64(count)
 		}
 	}
 	return -1

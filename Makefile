@@ -1,4 +1,3 @@
-
 .PHONY: local-server
 local-server:
 	@echo "running server locally ..."
@@ -12,3 +11,24 @@ swagger: check-swagger
 
 serve-swagger: check-swagger
 	swagger serve -F=swagger swagger.yaml
+
+unit-test:
+	go test -p=1 -cover $(PACKAGES) > unit-test.out;\
+	code=$$?;\
+	go-junit-report < unit-test.out > unit-report.xml; \
+	cat unit-test.out; \
+	grep -e 'FAIL' unit-test.out; \
+	exit $${code}
+
+fmt:
+	@echo "formatting code using go fmt"
+	go fmt ./...
+
+vet: 
+	@echo "vetting code using go vet"
+	go vet ./...
+
+# .PHONY: golint
+# golint:
+# 	@echo "running golangci-lint"
+# 	go lint

@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	fmt.Println("... starts server")
+	fmt.Println("Starts server .... ")
 	// router := mux.NewRouter().StrictSlash(true)
 	// router.HandleFunc("/get-stars", getStars).Methods("POST")
 	// //router.HandleFunc("/getStars", getStars)
