@@ -1,7 +1,14 @@
-FROM golang:latest
+FROM golang:latest 
 
-RUN go get github.com/90lantran/github-star
+WORKDIR /go/src
+
+COPY . .
+
+RUN mkdir -p bin
+
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -mod vendor -o bin/github-star cmd/*.go
 
 EXPOSE 8080
 
-ENTRYPOINT ["/go/bin/github-star"]
+ENTRYPOINT ["bin/github-star"]
+

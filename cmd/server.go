@@ -10,7 +10,7 @@ import (
 // Server represents the server side component of the API
 type Server struct {
 	serverStarted bool
-	// DB connection  if we want to extend the API
+	// DB connection  if we want to extend
 }
 
 // StartServer starts the server
