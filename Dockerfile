@@ -1,19 +1,10 @@
-FROM golang:latest as builder
+FROM golang:alpine
 
-WORKDIR /go/src
+WORKDIR /src
 
 COPY . .
 
-RUN mkdir -p bin
-
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -mod vendor -o bin/github-star cmd/*.go
-
-#####
-FROM blang/golang-alpine:latest
-
-WORKDIR /bin
-
-COPY --from=builder /go/src/bin/github-star .
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -mod vendor -o /bin/github-star cmd/*.go
 
 EXPOSE 8080
 
