@@ -1,6 +1,6 @@
 // Package classification github-stars
 //
-// This API can get number of stars for a list of organization/repository from github. If an input is not registered as an orgization in github, it will be skipped by this api.
+// This API can get number of stars for a list of organization/repository from github. If an element of the list is not registered as an orgization in github or a repository is not belong to a organization, it will be ignored.
 //
 //     Schemes: http
 //     BasePath: /

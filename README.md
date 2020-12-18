@@ -20,7 +20,14 @@ run locally: make local-server
 
 
 
-deployment in minikube: push the new image to dockerhub first start minikuke with driver virtualbox 
+deployment in minikube: 
+    - update the new image to dockerhub first 
+    - install hypervisor: hyperkit (brew install hyperkit) or install virtualbox
+    - install minikube : brew install minikube
+    - start minikuke with driver virtualbox : minikube start --vm-driver=virtualbox
+    - kubectl apply -f deployment/server.yaml
+    - minikube service my-server-service
+    - minikube delete
 
 generate swagger api: go-swagger, install : brew install go-swagger
 

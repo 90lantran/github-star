@@ -18,7 +18,7 @@ type request struct {
 	Body model.Request
 }
 
-// The reponse shows valid and invalid input and number of stars for valid ones.
+// The reponse shows valid and invalid organization/repository and number of stars for valid ones.
 // Example: {"totalStars":19,"invalidRepos":["tingo-org/homebrew-tools","tiygo-org/tinyfont","tinygo-org/tinyfnt"],"validRepos":{"tinygo-org/tinyfont":19}}"
 // swagger:response getStartsGoodResponse
 type getStartsGoodResponseWrapper struct {

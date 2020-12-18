@@ -49,7 +49,7 @@ info:
   contact:
     email: 90lantran@gmail.com
     name: Lan Tran
-  description: This API can get number of stars for a list of organization/repository from github. If an input is not registered as an orgization in github, it will be skipped by this api.
+  description: This API can get number of stars for a list of organization/repository from github. If an element of the list is not registered as an orgization in github or a repository does not belong to an organization, it will listed as invalid in the response.
   title: github-stars
   version: 1.0.0
 paths:
@@ -88,7 +88,7 @@ produces:
 responses:
   getStartsGoodResponse:
     description: |-
-      The reponse shows valid and invalid input and number of stars for valid ones.
+      The reponse shows valid and invalid organization/repository and number of stars for valid ones.
       Example: {"totalStars":19,"invalidRepos":["tingo-org/homebrew-tools","tiygo-org/tinyfont","tinygo-org/tinyfnt"],"validRepos":{"tinygo-org/tinyfont":19}}"
     schema:
       $ref: '#/definitions/Response'
