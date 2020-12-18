@@ -16,9 +16,10 @@ import (
 
 const (
 	healthExpectedResponse = "{\"message\":\"the server is up!\"}"
-	invalidRequestResponse = "{\"error\":\"invalid request\"}"
+	emptyRequestResponse   = "{\"error\":\"invalid request\"}"
 	getStarsResponse       = "{\"totalStars\":19,\"invalidRepos\":[\"tingo-org/homebrew-tools\",\"tiygo-org/tinyfont\",\"tinygo-org/tinyfnt\"],\"validRepos\":{\"tinygo-org/tinyfont\":19}}"
 	internalServerResponse = "{\"error\":\"cannot connect to github\"}"
+	invalidRequestResponse = "{\"error\":\"json: cannot unmarshal string into Go struct field Request.input of type []string\"}"
 )
 
 type Route struct {
@@ -65,9 +66,25 @@ func TestHealth(t *testing.T) {
 }
 
 func TestGetStars(t *testing.T) {
-	Convey("Given an invalid request send to "+constants.APIGetStarsEndpoint, t, func() {
+	Convey("Given an empty request send to "+constants.APIGetStarsEndpoint, t, func() {
 		body := []byte(`
 				{}
+		`)
+		request := httptest.NewRequest("POST", constants.APIGetStarsEndpoint, bytes.NewReader(body))
+		response := httptest.NewRecorder()
+		route := getStarsTestRoute()
+		Convey("When the request is handled by the router", func() {
+			route.Test(response, request)
+			Convey("Then we should get response with bad http response code", func() {
+				So(response.Code, ShouldEqual, 400)
+				So(string(cleanResponse(response.Body.String())), ShouldEqual, emptyRequestResponse)
+			})
+		})
+	})
+
+	Convey("Given an invalid request send to "+constants.APIGetStarsEndpoint, t, func() {
+		body := []byte(`
+				{"input":"tinygo-org/tinygo-site"}
 		`)
 		request := httptest.NewRequest("POST", constants.APIGetStarsEndpoint, bytes.NewReader(body))
 		response := httptest.NewRecorder()

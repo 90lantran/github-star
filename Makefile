@@ -1,9 +1,12 @@
 PACKAGES:=$(shell go list ./... | grep 'api')
 
 .PHONY: local-server
-local-server:
-	@echo "running server locally,listen at :8080 ..."
-	go run cmd/*.go
+local-server: create-image
+	@echo "running docker image of server ,listen at localhost:8080 ..."
+	docker run -p 8080:8080 github-stars
+
+create-image:
+	docker build --tag github-stars .
 
 unit-test:
 	@echo "run unit-test"
@@ -29,3 +32,4 @@ swagger: check-swagger
 
 serve-swagger: check-swagger
 	swagger serve -F=swagger swagger.yaml
+

@@ -29,6 +29,14 @@ func setGitService(mock model.GithubService) {
 	gitService = mock
 }
 
+// Base is just for minikube deployment
+func Base(w http.ResponseWriter, r *http.Request) {
+	response := model.HealthResponse{
+		Message: constants.MinikubeMessage,
+	}
+	utils.RespondWithJSON(w, http.StatusOK, response)
+}
+
 // Health is bussiness logic for /health endpoint
 func Health(w http.ResponseWriter, r *http.Request) {
 	response := model.HealthResponse{
@@ -72,12 +80,14 @@ func GetStars(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 	var err error
 	if err = decoder.Decode(&req); err != nil {
-		utils.RespondWithError(w, http.StatusInternalServerError, "cannot decode the payload")
-		log.Fatalf("internal server error %v\n", err)
+		log.Printf("... cannot decode request %v\n", err)
+		utils.RespondWithError(w, http.StatusBadRequest, err.Error())
+		return
 	}
 	defer r.Body.Close()
 
 	if req.Input == nil {
+		log.Printf("... invalid request %v", req)
 		utils.RespondWithError(w, http.StatusBadRequest, "invalid request")
 		return
 	}
@@ -105,7 +115,7 @@ func GetStars(w http.ResponseWriter, r *http.Request) {
 			if err == nil {
 				allRepos = results
 				seenOrgs[token[0]] = results
-				log.Printf("...added all repos of %s to map\n", token[0])
+				log.Printf("...added all repos of %s to cache\n", token[0])
 			} else {
 				log.Printf("%s is not a valid org\n", token[0])
 				invalidRepos = append(invalidRepos, input)

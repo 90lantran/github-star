@@ -15,6 +15,7 @@ func init() {
 
 // GetRouter configures router to handle requests coming to server
 func GetRouter() *mux.Router {
+	router.HandleFunc(constants.APIBaseEndpoint, api.Base).Methods("GET").Name("base")
 	router.HandleFunc(constants.APIHeathEndpoint, api.Health).Methods("GET").Name("health")
 	router.HandleFunc(constants.APIGetStarsEndpoint, api.GetStars).Methods("POST").Name("get-stars")
 	return router

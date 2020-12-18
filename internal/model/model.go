@@ -11,7 +11,7 @@ type ErrorResponse struct {
 }
 
 type Request struct {
-	Input *[]string `json:"input"`
+	Input *[]string `json:"input" required:"true"`
 }
 
 type Response struct {
