@@ -6,6 +6,10 @@ import (
 	"github.com/google/go-github/github"
 )
 
+type ErrorResponse struct {
+	Error string `json:"error"`
+}
+
 type Request struct {
 	Input *[]string `json:"input"`
 }

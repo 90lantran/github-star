@@ -1,0 +1,118 @@
+basePath: /
+consumes:
+- application/json
+definitions:
+  ErrorResponse:
+    properties:
+      error:
+        type: string
+        x-go-name: Error
+    type: object
+    x-go-package: github.com/90lantran/github-star/internal/model
+  HealthResponse:
+    properties:
+      message:
+        type: string
+        x-go-name: Message
+    type: object
+    x-go-package: github.com/90lantran/github-star/internal/model
+  Request:
+    properties:
+      input:
+        items:
+          type: string
+        type: array
+        x-go-name: Input
+    type: object
+    x-go-package: github.com/90lantran/github-star/internal/model
+  Response:
+    properties:
+      invalidRepos:
+        items:
+          type: string
+        type: array
+        x-go-name: InvalidRepos
+      totalStars:
+        format: int64
+        type: integer
+        x-go-name: TotalStars
+      validRepos:
+        additionalProperties:
+          format: int64
+          type: integer
+        type: object
+        x-go-name: ValidRepos
+    type: object
+    x-go-package: github.com/90lantran/github-star/internal/model
+host: localhost:8080
+info:
+  contact:
+    email: 90lantran@gmail.com
+    name: Lan Tran
+  description: This API can get number of stars for a list of organization/repository from github. If an input is not registered as an orgization in github, it will be skipped by this api.
+  title: github-stars
+  version: 1.0.0
+paths:
+  /get-stars:
+    post:
+      operationId: idOGetStarsEndpoint
+      parameters:
+      - description: Each element of the array must be in form organizatio/repository.
+        example: '{"input":["tinygo-org/tinygo-site"]}'
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/Request'
+      responses:
+        "200":
+          $ref: '#/responses/getStartsGoodResponse'
+        "400":
+          $ref: '#/responses/invalidResponseWrapper'
+        "500":
+          $ref: '#/responses/internalServerResponseWrapper'
+      summary: Return number of github stars for a list of originazation/repository.
+      tags:
+      - get-stars
+  /health:
+    get:
+      operationId: idOHealthEndpoint
+      responses:
+        "200":
+          $ref: '#/responses/healthResponseWrapper'
+      summary: Indication of health of the API.
+      tags:
+      - health
+produces:
+- application/json
+responses:
+  getStartsGoodResponse:
+    description: |-
+      The reponse shows valid and invalid input and number of stars for valid ones.
+      Example: {"totalStars":19,"invalidRepos":["tingo-org/homebrew-tools","tiygo-org/tinyfont","tinygo-org/tinyfnt"],"validRepos":{"tinygo-org/tinyfont":19}}"
+    schema:
+      $ref: '#/definitions/Response'
+  healthResponseWrapper:
+    description: |-
+      Reponse shows the server is up and ready for use.
+      example: "{"message":"the server is up!"}"
+    schema:
+      $ref: '#/definitions/HealthResponse'
+  internalServerResponseWrapper:
+    description: |-
+      The reponse is internal server when server cannot connect to github API.
+      Example: {"error":"cannot connect to github"}
+    schema:
+      $ref: '#/definitions/ErrorResponse'
+  invalidResponseWrapper:
+    description: |-
+      The reponse is invalid request message in case the request is not in the right format.
+      Example: {"error":"invalid request"}
+    schema:
+      $ref: '#/definitions/ErrorResponse'
+schemes:
+- http
+securityDefinitions:
+  basic:
+    type: basic
+swagger: "2.0"
