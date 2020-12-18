@@ -25,10 +25,16 @@ func init() {
 	}
 }
 
+func setGitService(mock model.GithubService) {
+	gitService = mock
+}
+
 // Health is bussiness logic for /health endpoint
 func Health(w http.ResponseWriter, r *http.Request) {
-	resp := constants.HealthCheckResponse
-	utils.RespondWithJSON(w, http.StatusOK, resp)
+	response := model.HealthResponse{
+		Message: constants.HealthCheckResponse,
+	}
+	utils.RespondWithJSON(w, http.StatusOK, response)
 }
 
 // GetStars is bussiness logic for /get-stars endpoint
@@ -83,6 +89,11 @@ func GetStars(w http.ResponseWriter, r *http.Request) {
 	invalidRepos := make([]string, 0)
 	// caching, save number of to github API
 	seenOrgs := make(map[string][]*github.Repository)
+
+	if gitService.Client == nil || gitService.Ctx == nil {
+		utils.RespondWithError(w, http.StatusInternalServerError, "cannot connect to github")
+		return
+	}
 
 	for _, input := range *req.Input {
 		log.Printf("...processing input %v\n", input)

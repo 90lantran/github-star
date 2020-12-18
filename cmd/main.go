@@ -7,11 +7,9 @@ import (
 )
 
 func main() {
-	fmt.Println("Starts server .... ")
-	// router := mux.NewRouter().StrictSlash(true)
-	// router.HandleFunc("/get-stars", getStars).Methods("POST")
-	// //router.HandleFunc("/getStars", getStars)
-	// log.Fatal(http.ListenAndServe(":8080", router))
 	server := server{}
-	server.startServer()
+	if !server.serverStarted {
+		fmt.Println("Welcome to github-stars server :)) .... ")
+		server.startServer()
+	}
 }

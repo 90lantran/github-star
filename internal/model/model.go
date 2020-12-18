@@ -21,3 +21,7 @@ type GithubService struct {
 	Client *github.Client
 	Opt    *github.RepositoryListByOrgOptions
 }
+
+type HealthResponse struct {
+	Message string `json:"message"`
+}

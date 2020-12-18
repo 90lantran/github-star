@@ -22,6 +22,7 @@ func RespondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
 
 func ListAllReposForAnOrg(gitService model.GithubService, orgName string) ([]*github.Repository, error) {
 	var allRepos []*github.Repository
+
 	for {
 		repos, resp, err := gitService.Client.Repositories.ListByOrg(gitService.Ctx, orgName, gitService.Opt)
 		if err != nil {
