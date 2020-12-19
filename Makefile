@@ -34,3 +34,14 @@ swagger: check-swagger
 serve-swagger: check-swagger
 	swagger serve -F=swagger swagger.yaml
 
+k8s-deploy:
+	minikube start --vm-driver=virtualbox;\
+	kubectl apply -f deployment/server.yaml;\
+	sleep 5;\
+	minikube service my-server-service;
+
+k8s-delete:
+	minikube delete
+	
+
+
