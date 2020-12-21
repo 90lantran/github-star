@@ -41,7 +41,7 @@ $ make k8s-deploy
 minikube delete
 🔥  Deleting "minikube" in virtualbox ...
 💀  Removed all traces of the "minikube" cluster.
-(base) alantran@github-star$ make k8s-deploy
+(base) github-star$ make k8s-deploy
 minikube start --vm-driver=virtualbox;\
 	kubectl apply -f deployment/server.yaml;\
 	sleep 10;\
