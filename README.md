@@ -9,7 +9,10 @@ unit-test were written with [goconvey](https://github.com/smartystreets/goconvey
 
 To run unit-test: 
 ```
-$ make unit-test 
+$ make unit-test
+run unit-test
+go clean -testcache && go test -cover github.com/90lantran/github-star/pkg/api -coverprofile report/unit-test.out
+ok      github.com/90lantran/github-star/pkg/api        1.237s  coverage: 96.4% of statements 
 ```
 
 To show code-coverage:
@@ -104,7 +107,7 @@ Create swagger yaml:
 ```
 $ make swagger
 ```
-Show swagger ui:
+Show swagger ui in browser:
 ```
 $ make serve-swagger
 ```
