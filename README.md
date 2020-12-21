@@ -34,7 +34,7 @@ $ make local-server
 
 ## Deployment in minikube: 
 The deployment config is in `deployment/server.yaml`.
-
+<br/>
 1.If you already had minikube and virtualbox installed, you can deploy to minikube right away.
 ```
 $ make k8s-deploy
