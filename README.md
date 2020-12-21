@@ -1,8 +1,8 @@
 # github-star
-This is a simple API written in Go to get number of github stars for a list of organization/repository.
+This API can get number of stars for a list of organization/repository from github. If an element of the list is not registered as an orgization in github or a repository is not belong to a organization or invallid format, it will be ignored.
 
 ## API document
-Details of endpoints, response and request are in this [swagger](https://90lantran.github.io/swagger-github-stars/).
+Details of endpoints, response and request are in this [swagger](https://90lantran.github.io/swagger-github-stars/). It is highly recommended to take a look at this swagger to have general idea how this API works.
 
 ## Unit test
 unit-test were written with [goconvey](https://github.com/smartystreets/goconvey) which gives details about testing scenarios of unit-test. You may need to [install](https://github.com/smartystreets/goconvey#installation) it first if you have not had it.
@@ -61,9 +61,9 @@ $ make k8s-delete
 ```
 
 ## Future work:
-- connect o github with go-github https://github.com/google/go-github, no authentication for now
-- no authentication to use github API because I dont want to commit by credentails -> rate limit
-- rate limit: how to avoid it need to log in
+- Connect to github with [go-github](https://github.com/google/go-github) with no authentication for now
+- It will affect the rate limit when interacting with github APIs
+- Add zap-log from Uber for structured logs
 
 ## Swagger docs:
 I use go-swagger to generate API document.
