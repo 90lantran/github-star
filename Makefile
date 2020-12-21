@@ -10,6 +10,9 @@ local-server: create-image
 create-image:
 	docker build --tag github-stars .
 
+push-new-image: create-image
+	docker login && docker tag github-stars:latest 90lantran/my-server:latest  && docker push 90lantran/my-server:latest
+
 unit-test:
 	@echo "run unit-test"
 	go clean -testcache && go test -cover $(PACKAGES) -coverprofile report/unit-test.out
@@ -39,11 +42,12 @@ serve-swagger: check-swagger
 k8s-deploy:
 	minikube start --vm-driver=virtualbox;\
 	kubectl apply -f deployment/server.yaml;\
-	sleep 5;\
+	sleep 10;\
 	minikube service my-server-service;
 
 k8s-delete:
 	minikube delete
+
 	
 
 
