@@ -21,7 +21,7 @@ func init() {
 		Ctx:    context.Background(),
 		Client: github.NewClient(nil),
 		Opt: &github.RepositoryListByOrgOptions{
-			ListOptions: github.ListOptions{PerPage: 30}},
+			ListOptions: github.ListOptions{PerPage: 100}},
 	}
 }
 
@@ -47,61 +47,33 @@ func Health(w http.ResponseWriter, r *http.Request) {
 
 // GetStars is bussiness logic for /get-stars endpoint
 func GetStars(w http.ResponseWriter, r *http.Request) {
-	// gitService := model.GithubService{
-	// 	Ctx:    context.Background(),
-	// 	Client: github.NewClient(nil),
-	// 	Opt: &github.RepositoryListByOrgOptions{
-	// 		ListOptions: github.ListOptions{PerPage: 30}},
-	// }
-	// b082d2cd0e5e4202f31a
-	// 76b2b47503154546fc0393b70c3b488d3f6d66a1
-
-	// gitService := model.GithubService{
-	// 	Ctx:    context.Background(),
-	// 	Client: github.NewClient(nil),
-	// 	Opt:    &github.RepositoryListByOrgOptions{ListOptions: github.ListOptions{PerPage: 30}},
-	// }
-	// should be in app.go
-	//ctx := context.Background()
-	// ts := oauth2.StaticTokenSource(
-	// 	&oauth2.Token{AccessToken: "08dcd33b87acba14d8630efbf2ae2736d885ad53"},
-	// )
-	//tc := oauth2.NewClient(ctx, ts)
-
-	//client := github.NewClient(tc)
-	// client := github.NewClient(nil)
-
-	// opt := &github.RepositoryListByOrgOptions{
-	// 	ListOptions: github.ListOptions{PerPage: 30},
-	// }
-
 	// parse payload
 	var req model.Request
 	decoder := json.NewDecoder(r.Body)
 	var err error
 	if err = decoder.Decode(&req); err != nil {
 		log.Printf("... cannot decode request %v\n", err)
-		utils.RespondWithError(w, http.StatusBadRequest, err.Error())
+		utils.RespondWithJSON(w, http.StatusBadRequest, model.Response{Error: err.Error(), Status: "failure"})
 		return
 	}
 	defer r.Body.Close()
 
 	if req.Input == nil {
 		log.Printf("... invalid request %v", req)
-		utils.RespondWithError(w, http.StatusBadRequest, "invalid request")
+		utils.RespondWithJSON(w, http.StatusBadRequest, model.Response{Error: "invalid request", Status: "failure"})
 		return
 	}
 
-	// start couting
+	// start couting stars
 	var totalCount int64
-	var resp model.Response
-	validRepos := make(map[string]int64)
+	//var resp model.Response
+	validRepos := make([]model.MapNameStar, 0)
 	invalidRepos := make([]string, 0)
-	// caching, save number of to github API
+	// caching, save number of call to github API
 	seenOrgs := make(map[string][]*github.Repository)
 
 	if gitService.Client == nil || gitService.Ctx == nil {
-		utils.RespondWithError(w, http.StatusInternalServerError, "cannot connect to github")
+		utils.RespondWithJSON(w, http.StatusInternalServerError, model.Response{Error: "cannot connect to github", Status: "failure"})
 		return
 	}
 
@@ -124,7 +96,7 @@ func GetStars(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if count := utils.GetStarsForRepo(allRepos, token[1]); count != -1 {
-			validRepos[input] = count
+			validRepos = append(validRepos, model.MapNameStar{input, count})
 			totalCount += count
 		} else {
 			log.Printf("%s is not a valid repo in the organization %s \n", token[1], token[0])
@@ -132,9 +104,13 @@ func GetStars(w http.ResponseWriter, r *http.Request) {
 		}
 
 	}
-	resp.TotalStars = totalCount
-	resp.ValidRepos = validRepos
-	resp.InvalidRepos = invalidRepos
+	resp := model.Response{
+		TotalStars:   totalCount,
+		ValidRepos:   validRepos,
+		InvalidRepos: invalidRepos,
+		Status:       "success",
+	}
 	log.Println("finished request")
+	log.Printf("Response: %+v\n", resp)
 	utils.RespondWithJSON(w, http.StatusOK, resp)
 }

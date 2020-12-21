@@ -9,10 +9,6 @@ import (
 	"github.com/90lantran/github-star/internal/model"
 )
 
-func RespondWithError(w http.ResponseWriter, code int, message string) {
-	RespondWithJSON(w, code, map[string]string{"error": message})
-}
-
 func RespondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
 	response, _ := json.Marshal(payload)
 	w.Header().Set("Content-Type", "application/json")

@@ -16,10 +16,10 @@ import (
 
 const (
 	healthExpectedResponse = "{\"message\":\"the server is up!\"}"
-	emptyRequestResponse   = "{\"error\":\"invalid request\"}"
-	getStarsResponse       = "{\"totalStars\":19,\"invalidRepos\":[\"tingo-org/homebrew-tools\",\"tiygo-org/tinyfont\",\"tinygo-org/tinyfnt\"],\"validRepos\":{\"tinygo-org/tinyfont\":19}}"
-	internalServerResponse = "{\"error\":\"cannot connect to github\"}"
-	invalidRequestResponse = "{\"error\":\"json: cannot unmarshal string into Go struct field Request.input of type []string\"}"
+	emptyRequestResponse   = "{\"error\":\"invalid request\",\"status\":\"failure\"}"
+	getStarsResponse       = "{\"totalStars\":19,\"invalidRepos\":[\"tingo-org/homebrew-tools\",\"tiygo-org/tinyfont\",\"tinygo-org/tinyfnt\"],\"validRepos\":[{\"name\":\"tinygo-org/tinyfont\",\"star(s)\":19}],\"status\":\"success\"}"
+	internalServerResponse = "{\"error\":\"cannot connect to github\",\"status\":\"failure\"}"
+	invalidRequestResponse = "{\"error\":\"json: cannot unmarshal string into Go struct field Request.input of type []string\",\"status\":\"failure\"}"
 )
 
 type Route struct {
@@ -41,6 +41,7 @@ func getStarsTestRoute() *Route {
 		Handler: http.HandlerFunc(GetStars),
 	}
 }
+
 func cleanResponse(responseBody string) string {
 	return strings.Replace(responseBody, "\n", "", 1)
 }
