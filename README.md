@@ -1,5 +1,5 @@
 # github-star
-This API can get number of stars for a list of format `organization/repository` from github. If an element of the list is `not registered` as an orgization in github or a repository is `not belong` to a organization or `invallid format`, it will be ignored.
+This API can get number of stars for a list of format `organization/repository` from github. If an element of the list is `not registered` as an orgization in github or a repository is `not belong` to a organization or `invallid format`, it will be not be processed.
 
 ## API document
 Details of endpoints, responses and requests are in this [swagger](https://90lantran.github.io/swagger-github-stars/). It is `highly recommended` to take a look at this swagger to have general idea how this API works.
@@ -34,6 +34,7 @@ $ make local-server
 
 ## Deployment in minikube: 
 The deployment config is in `deployment/server.yaml`.
+
 1.If you already had minikube and virtualbox installed, you can deploy to minikube right away.
 ```
 $ make k8s-deploy
