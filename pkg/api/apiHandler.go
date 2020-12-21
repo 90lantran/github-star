@@ -56,8 +56,7 @@ func GetStars(w http.ResponseWriter, r *http.Request) {
 	// parse payload
 	var req model.Request
 	decoder := json.NewDecoder(r.Body)
-	var err error
-	if err = decoder.Decode(&req); err != nil {
+	if err := decoder.Decode(&req); err != nil {
 		log.Printf("... cannot decode request %v\n", err)
 		utils.RespondWithJSON(w, http.StatusBadRequest, model.Response{Error: err.Error(), Status: failure})
 		return
@@ -72,7 +71,6 @@ func GetStars(w http.ResponseWriter, r *http.Request) {
 
 	// start couting stars
 	var totalCount int64
-	//var resp model.Response
 	validRepos := make([]model.MapNameStar, 0)
 	invalidRepos := make([]string, 0)
 	// caching, save number of call to github API
@@ -84,7 +82,7 @@ func GetStars(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for _, input := range *req.Input {
-		log.Printf("... check if each element in the form organization/repository")
+		log.Printf("... check if each element in the format organization/repository")
 		if err := utils.ValidateInput(input); err != nil {
 			log.Printf("%s is not in right format orginazation/repo\n", input)
 			invalidRepos = append(invalidRepos, input)
@@ -130,7 +128,6 @@ func GetStars(w http.ResponseWriter, r *http.Request) {
 	if len(invalidRepos) != 0 {
 		resp.Error = inputNotValidMessage
 	}
-
 	log.Println("finished request")
 	log.Printf("Response: %+v\n", resp)
 	utils.RespondWithJSON(w, http.StatusOK, resp)
