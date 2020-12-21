@@ -1,8 +1,8 @@
 # github-star
-This API can get number of stars for a list of organization/repository from github. If an element of the list is not registered as an orgization in github or a repository is not belong to a organization or invallid format, it will be ignored.
+This API can get number of stars for a list of format `organization/repository` from github. If an element of the list is `not registered` as an orgization in github or a repository is `not belong` to a organization or `invallid format`, it will be ignored.
 
 ## API document
-Details of endpoints, response and request are in this [swagger](https://90lantran.github.io/swagger-github-stars/). It is highly recommended to take a look at this swagger to have general idea how this API works.
+Details of endpoints, responses and requests are in this [swagger](https://90lantran.github.io/swagger-github-stars/). It is `highly recommended` to take a look at this swagger to have general idea how this API works.
 
 ## Unit test
 unit-test were written with [goconvey](https://github.com/smartystreets/goconvey) which gives details about testing scenarios of unit-test. You may need to [install](https://github.com/smartystreets/goconvey#installation) it first if you have not had it.
@@ -63,7 +63,7 @@ service/my-server-service created
 🎉  Opening service default/my-server-service in default browser...
 
 ```
-2.If you you need to install minikube and hypervisor, you can follow these steps. It will take like 15-20mins.
+2.If you need to install minikube and hypervisor, you can follow these steps. It will take like 15-20mins.
 - Install hypervisor (pick one of them): 
     - hyperkit: brew install hyperkit) 
     - virtualbox: brew install --cask virtualbox
@@ -99,15 +99,15 @@ $ make k8s-delete
 ## Future work:
 - Connect to github with [go-github](https://github.com/google/go-github) with no authentication for now
 - It will affect the rate limit when interacting with github APIs
-- Add zap-log from Uber for structured logs
+- Add [zap-log](https://github.com/uber-go/zap) from Uber for structured logs
 
 ## Swagger docs:
-I use go-swagger to generate API document.
+I use [go-swagger](https://github.com/go-swagger/go-swagger) to generate API document.
 Create swagger yaml: 
 ```
 $ make swagger
 ```
-Show swagger ui in browser:
+Show swagger UI in browser:
 ```
 $ make serve-swagger
 ```
