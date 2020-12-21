@@ -1,6 +1,8 @@
 PACKAGES:=$(shell go list ./... | grep 'api')
 
-.PHONY: local-server
+build:
+	go build -o server cmd/*.go
+
 local-server: create-image
 	@echo "running docker image of server ,listen at localhost:8080 ..."
 	docker run -p 8080:8080 github-stars

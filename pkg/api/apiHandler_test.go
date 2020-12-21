@@ -16,8 +16,8 @@ import (
 
 const (
 	healthExpectedResponse = "{\"message\":\"the server is up!\"}"
-	emptyRequestResponse   = "{\"error\":\"invalid request\",\"status\":\"failure\"}"
-	getStarsResponse       = "{\"totalStars\":19,\"invalidRepos\":[\"tingo-org/homebrew-tools\",\"tiygo-org/tinyfont\",\"tinygo-org/tinyfnt\"],\"validRepos\":[{\"name\":\"tinygo-org/tinyfont\",\"star(s)\":19}],\"status\":\"success\"}"
+	emptyRequestResponse   = "{\"error\":\"invalid request. Must contain 'input:'\",\"status\":\"failure\"}"
+	getStarsResponse       = "{\"payload\":{\"totalStars\":19,\"invalidRepos\":[\"tingo-org/homebrew-tools\",\"tiygo-org\",\"tinygo-org/tinyfnt\"],\"validRepos\":[{\"name\":\"tinygo-org/tinyfont\",\"star(s)\":19}]},\"error\":\"At least one of the input is not valid\",\"status\":\"success\"}"
 	internalServerResponse = "{\"error\":\"cannot connect to github\",\"status\":\"failure\"}"
 	invalidRequestResponse = "{\"error\":\"json: cannot unmarshal string into Go struct field Request.input of type []string\",\"status\":\"failure\"}"
 )
@@ -101,7 +101,7 @@ func TestGetStars(t *testing.T) {
 
 	Convey("Given a valid request send to "+constants.APIGetStarsEndpoint, t, func() {
 		body := []byte(`
-				{"input":["tingo-org/homebrew-tools","tinygo-org/tinyfont","tiygo-org/tinyfont","tinygo-org/tinyfnt"]}
+				{"input":["tingo-org/homebrew-tools","tinygo-org/tinyfont","tiygo-org","tinygo-org/tinyfnt"]}
 		`)
 		request := httptest.NewRequest("POST", constants.APIGetStarsEndpoint, bytes.NewReader(body))
 		response := httptest.NewRecorder()
@@ -117,7 +117,7 @@ func TestGetStars(t *testing.T) {
 
 	Convey("Given a request send to "+constants.APIGetStarsEndpoint+"and cannot connet to github", t, func() {
 		body := []byte(`
-				{"input":["tingo-org/homebrew-tools","tinygo-org/tinyfont","tiygo-org/tinyfont","tinygo-org/tinyfnt"]}
+				{"input":["tingo-org/homebrew-tools","tinygo-org/tinyfont","tiygo-org","tinygo-org/tinyfnt"]}
 		`)
 		setGitService(model.GithubService{})
 		request := httptest.NewRequest("POST", constants.APIGetStarsEndpoint, bytes.NewReader(body))

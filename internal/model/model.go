@@ -7,15 +7,18 @@ import (
 )
 
 type Request struct {
-	Input *[]string `json:"input" required:"true"`
+	Input *[]string `json:"input" validate:"required"`
 }
 
 type Response struct {
+	Pl     *Payload `json:"payload,omitempty"`
+	Error  string   `json:"error,omitempty"`
+	Status string   `json:"status" validate:"required"`
+}
+type Payload struct {
 	TotalStars   int64         `json:"totalStars,omitempty"`
 	InvalidRepos []string      `json:"invalidRepos,omitempty"`
 	ValidRepos   []MapNameStar `json:"validRepos,omitempty"`
-	Error        string        `json:"error,omitempty"`
-	Status       string        `json:"status" validate:"required"`
 }
 
 type MapNameStar struct {

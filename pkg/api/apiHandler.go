@@ -16,6 +16,12 @@ import (
 
 var gitService model.GithubService
 
+const (
+	success              = "success"
+	failure              = "failure"
+	inputNotValidMessage = "At least one of the input is not valid"
+)
+
 func init() {
 	gitService = model.GithubService{
 		Ctx:    context.Background(),
@@ -53,14 +59,14 @@ func GetStars(w http.ResponseWriter, r *http.Request) {
 	var err error
 	if err = decoder.Decode(&req); err != nil {
 		log.Printf("... cannot decode request %v\n", err)
-		utils.RespondWithJSON(w, http.StatusBadRequest, model.Response{Error: err.Error(), Status: "failure"})
+		utils.RespondWithJSON(w, http.StatusBadRequest, model.Response{Error: err.Error(), Status: failure})
 		return
 	}
 	defer r.Body.Close()
 
 	if req.Input == nil {
-		log.Printf("... invalid request %v", req)
-		utils.RespondWithJSON(w, http.StatusBadRequest, model.Response{Error: "invalid request", Status: "failure"})
+		log.Printf("... invalid request. Must contain \"input:\" %v", req)
+		utils.RespondWithJSON(w, http.StatusBadRequest, model.Response{Error: "invalid request. Must contain 'input:'", Status: failure})
 		return
 	}
 
@@ -73,13 +79,20 @@ func GetStars(w http.ResponseWriter, r *http.Request) {
 	seenOrgs := make(map[string][]*github.Repository)
 
 	if gitService.Client == nil || gitService.Ctx == nil {
-		utils.RespondWithJSON(w, http.StatusInternalServerError, model.Response{Error: "cannot connect to github", Status: "failure"})
+		utils.RespondWithJSON(w, http.StatusInternalServerError, model.Response{Error: "cannot connect to github", Status: failure})
 		return
 	}
 
 	for _, input := range *req.Input {
+		log.Printf("... check if each element in the form organization/repository")
+		if err := utils.ValidateInput(input); err != nil {
+			log.Printf("%s is not in right format orginazation/repo\n", input)
+			invalidRepos = append(invalidRepos, input)
+			continue
+		}
 		log.Printf("...processing input %v\n", input)
 		token := strings.Split(input, "/")
+
 		allRepos, ok := seenOrgs[token[0]]
 		if !ok {
 			log.Printf("%s is not seen before\n", token[0])
@@ -104,12 +117,20 @@ func GetStars(w http.ResponseWriter, r *http.Request) {
 		}
 
 	}
-	resp := model.Response{
+	payload := model.Payload{
 		TotalStars:   totalCount,
 		ValidRepos:   validRepos,
 		InvalidRepos: invalidRepos,
-		Status:       "success",
 	}
+	resp := model.Response{
+		Pl:     &payload,
+		Status: success,
+	}
+
+	if len(invalidRepos) != 0 {
+		resp.Error = inputNotValidMessage
+	}
+
 	log.Println("finished request")
 	log.Printf("Response: %+v\n", resp)
 	utils.RespondWithJSON(w, http.StatusOK, resp)

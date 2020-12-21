@@ -2,12 +2,25 @@ package utils
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
+	"regexp"
+	"strings"
 
 	"github.com/google/go-github/github"
 
 	"github.com/90lantran/github-star/internal/model"
 )
+
+func ValidateInput(input string) error {
+	var validInput = regexp.MustCompile(`^[a-zA-Z0-9\_\-\.]+\/[a-zA-Z0-9\_\-\.]+$`)
+
+	if !validInput.MatchString(strings.TrimSpace(input)) {
+		return fmt.Errorf("-r input list %s is not valid. Valid format is list of organization/repository", input)
+	}
+
+	return nil
+}
 
 func RespondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
 	response, _ := json.Marshal(payload)
