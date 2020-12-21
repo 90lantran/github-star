@@ -31,7 +31,7 @@ type getStartsGoodResponseWrapper struct {
 // swagger:response invalidResponseWrapper
 type invalidResponseWrapper struct {
 	// in:body
-	Body model.ErrorResponse
+	Body model.Response
 }
 
 // The reponse is internal server when server cannot connect to github API.
@@ -39,7 +39,7 @@ type invalidResponseWrapper struct {
 // swagger:response internalServerResponseWrapper
 type internalServerResponseWrapper struct {
 	// in:body
-	Body model.ErrorResponse
+	Body model.Response
 }
 
 // swagger:route GET /health health idOHealthEndpoint

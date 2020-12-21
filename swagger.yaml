@@ -2,18 +2,40 @@ basePath: /
 consumes:
 - application/json
 definitions:
-  ErrorResponse:
-    properties:
-      error:
-        type: string
-        x-go-name: Error
-    type: object
-    x-go-package: github.com/90lantran/github-star/internal/model
   HealthResponse:
     properties:
       message:
         type: string
         x-go-name: Message
+    type: object
+    x-go-package: github.com/90lantran/github-star/internal/model
+  MapNameStar:
+    properties:
+      name:
+        type: string
+        x-go-name: Name
+      star(s):
+        format: int64
+        type: integer
+        x-go-name: Star
+    type: object
+    x-go-package: github.com/90lantran/github-star/internal/model
+  Payload:
+    properties:
+      invalidRepos:
+        items:
+          type: string
+        type: array
+        x-go-name: InvalidRepos
+      totalStars:
+        format: int64
+        type: integer
+        x-go-name: TotalStars
+      validRepos:
+        items:
+          $ref: '#/definitions/MapNameStar'
+        type: array
+        x-go-name: ValidRepos
     type: object
     x-go-package: github.com/90lantran/github-star/internal/model
   Request:
@@ -27,21 +49,14 @@ definitions:
     x-go-package: github.com/90lantran/github-star/internal/model
   Response:
     properties:
-      invalidRepos:
-        items:
-          type: string
-        type: array
-        x-go-name: InvalidRepos
-      totalStars:
-        format: int64
-        type: integer
-        x-go-name: TotalStars
-      validRepos:
-        additionalProperties:
-          format: int64
-          type: integer
-        type: object
-        x-go-name: ValidRepos
+      error:
+        type: string
+        x-go-name: Error
+      payload:
+        $ref: '#/definitions/Payload'
+      status:
+        type: string
+        x-go-name: Status
     type: object
     x-go-package: github.com/90lantran/github-star/internal/model
 host: localhost:8080
@@ -49,7 +64,7 @@ info:
   contact:
     email: 90lantran@gmail.com
     name: Lan Tran
-  description: This API can get number of stars for a list of organization/repository from github. If an element of the list is not registered as an orgization in github or a repository does not belong to an organization, it will listed as invalid in the response.
+  description: This API can get number of stars for a list of organization/repository from github. If an element of the list is not registered as an orgization in github or a repository is not belong to a organization or invallid, it will be ignored.
   title: github-stars
   version: 1.0.0
 paths:
@@ -89,7 +104,7 @@ responses:
   getStartsGoodResponse:
     description: |-
       The reponse shows valid and invalid organization/repository and number of stars for valid ones.
-      Example: {"totalStars":19,"invalidRepos":["tingo-org/homebrew-tools","tiygo-org/tinyfont","tinygo-org/tinyfnt"],"validRepos":{"tinygo-org/tinyfont":19}}"
+      Example: {\"payload\":{\"totalStars\":19,\"invalidRepos\":[\"tingo-org/homebrew-tools\",\"tiygo-org\",\"tinygo-org/tinyfnt\"],\"validRepos\":[{\"name\":\"tinygo-org/tinyfont\",\"star(s)\":19}]},\"error\":\"At least one of the input is not valid\",\"status\":\"success\"}
     schema:
       $ref: '#/definitions/Response'
   healthResponseWrapper:
@@ -101,15 +116,15 @@ responses:
   internalServerResponseWrapper:
     description: |-
       The reponse is internal server when server cannot connect to github API.
-      Example: {"error":"cannot connect to github"}
+      Example: {\"error\":\"cannot connect to github\",\"status\":\"failure\"}
     schema:
-      $ref: '#/definitions/ErrorResponse'
+      $ref: '#/definitions/Response'
   invalidResponseWrapper:
     description: |-
       The reponse is invalid request message in case the request is not in the right format.
-      Example: {"error":"invalid request"}
+      Example: {\"error\":\"invalid request. Must contain 'input:'\",\"status\":\"failure\"}
     schema:
-      $ref: '#/definitions/ErrorResponse'
+      $ref: '#/definitions/Response'
 schemes:
 - http
 securityDefinitions:
