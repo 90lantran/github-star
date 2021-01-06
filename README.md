@@ -1,5 +1,7 @@
 # github-star
 This API can get number of stars for a list of format `organization/repository` from github. If an element of the list is `not registered` as an orgization in github or a repository is `not belong` to a organization or `invallid format`, it will be not be processed.
+<br/>
+In order to connect to github, I use [go-github](https://github.com/google/go-github). This provides a client to list all repositories belong to an organization.
 
 ## API document
 Details of endpoints, responses and requests are in this [swagger](https://90lantran.github.io/swagger-github-stars/). It is `highly recommended` to take a look at this swagger to have general idea how this API works.
@@ -98,9 +100,9 @@ $ make k8s-delete
 ```
 
 ## Future work:
-- Connect to github with [go-github](https://github.com/google/go-github) with no authentication for now
-- It will affect the rate limit when interacting with github APIs
-- Add [zap-log](https://github.com/uber-go/zap) from Uber for structured logs
+- Connect to github with [go-github](https://github.com/google/go-github) with no authentication for now. It will affect the rate limit when interacting with github APIs.
+- Add [zap-log](https://github.com/uber-go/zap) from Uber for structured logs for monitoring
+- Add Jenkinsfile for CICD
 
 ## Swagger docs:
 I use [go-swagger](https://github.com/go-swagger/go-swagger) to generate API document.

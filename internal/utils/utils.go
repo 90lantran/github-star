@@ -16,7 +16,7 @@ func ValidateInput(input string) error {
 	var validInput = regexp.MustCompile(`^[a-zA-Z0-9\_\-\.]+\/[a-zA-Z0-9\_\-\.]+$`)
 
 	if !validInput.MatchString(strings.TrimSpace(input)) {
-		return fmt.Errorf("-r input list %s is not valid. Valid format is list of organization/repository", input)
+		return fmt.Errorf("input list %s is not valid. Valid format is list of organization/repository", input)
 	}
 
 	return nil
