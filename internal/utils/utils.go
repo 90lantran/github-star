@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -8,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/google/go-github/github"
+	"golang.org/x/oauth2"
 
 	"github.com/90lantran/github-star/internal/model"
 )
@@ -32,8 +34,17 @@ func RespondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
 func ListAllReposForAnOrg(gitService model.GithubService, orgName string) ([]*github.Repository, error) {
 	var allRepos []*github.Repository
 
+	ctx := context.Background()
+	ts := oauth2.StaticTokenSource(
+		&oauth2.Token{AccessToken: "99a7fae4ff499fb007b35ea8b34261d6c2c7d7de"},
+	)
+	tc := oauth2.NewClient(ctx, ts)
+
+	client := github.NewClient(tc)
+
 	for {
-		repos, resp, err := gitService.Client.Repositories.ListByOrg(gitService.Ctx, orgName, gitService.Opt)
+		repos, resp, err := client.Repositories.ListByOrg(ctx, orgName, gitService.Opt)
+		//repos, resp, err := gitService.Client.Repositories.ListByOrg(gitService.Ctx, orgName, gitService.Opt)
 		if err != nil {
 			return nil, err
 		}

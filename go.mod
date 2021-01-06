@@ -8,4 +8,5 @@ require (
 	github.com/gorilla/mux v1.8.0
 	github.com/pdrum/swagger-automation v0.0.0-20190629163613-c8c7c80ba858
 	github.com/smartystreets/goconvey v1.6.4
+	golang.org/x/oauth2 v0.0.0-20201208152858-08078c50e5b5
 )
