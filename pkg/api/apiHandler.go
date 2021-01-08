@@ -101,6 +101,7 @@ func GetStars(w http.ResponseWriter, r *http.Request) {
 				log.Printf("...added all repos of %s to cache\n", token[0])
 				log.Printf("...SIZE IS %d\n", len(results))
 			} else {
+				log.Printf("Error is %v \n", err)
 				log.Printf("%s is not a valid org\n", token[0])
 				invalidRepos = append(invalidRepos, input)
 				continue
