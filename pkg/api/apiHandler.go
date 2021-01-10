@@ -1,8 +1,8 @@
 package api
 
 import (
-	"context"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"strings"
@@ -15,6 +15,7 @@ import (
 )
 
 var gitService model.GithubService
+var seenOrgs map[string][]*github.Repository
 
 const (
 	success              = "success"
@@ -23,11 +24,14 @@ const (
 )
 
 func init() {
+	seenOrgs = make(map[string][]*github.Repository)
+
+	client := github.NewClient(nil)
+
+	fmt.Printf("client %+v\n", client)
+
 	gitService = model.GithubService{
-		Ctx:    context.Background(),
-		Client: github.NewClient(nil),
-		Opt: &github.RepositoryListByOrgOptions{
-			ListOptions: github.ListOptions{PerPage: 100}},
+		Client: client,
 	}
 }
 
@@ -76,7 +80,7 @@ func GetStars(w http.ResponseWriter, r *http.Request) {
 	// caching, save number of call to github API
 	seenOrgs := make(map[string][]*github.Repository)
 
-	if gitService.Client == nil || gitService.Ctx == nil {
+	if gitService.Client == nil {
 		utils.RespondWithJSON(w, http.StatusInternalServerError, model.Response{Error: "cannot connect to github", Status: failure})
 		return
 	}
@@ -90,7 +94,6 @@ func GetStars(w http.ResponseWriter, r *http.Request) {
 		}
 		log.Printf("...processing input %v\n", input)
 		token := strings.Split(input, "/")
-
 		allRepos, ok := seenOrgs[token[0]]
 		if !ok {
 			log.Printf("%s is not seen before\n", token[0])
@@ -99,7 +102,6 @@ func GetStars(w http.ResponseWriter, r *http.Request) {
 				allRepos = results
 				seenOrgs[token[0]] = results
 				log.Printf("...added all repos of %s to cache\n", token[0])
-				log.Printf("...SIZE IS %d\n", len(results))
 			} else {
 				log.Printf("Error is %v \n", err)
 				log.Printf("%s is not a valid org\n", token[0])
