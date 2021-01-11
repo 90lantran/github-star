@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -8,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/google/go-github/github"
+	"golang.org/x/oauth2"
 
 	"github.com/90lantran/github-star/internal/constants"
 	"github.com/90lantran/github-star/internal/model"
@@ -16,6 +18,7 @@ import (
 
 var gitService model.GithubService
 var seenOrgs map[string][]*github.Repository
+var flag bool
 
 const (
 	success              = "success"
@@ -25,10 +28,15 @@ const (
 
 func init() {
 	seenOrgs = make(map[string][]*github.Repository)
+	flag = true
+	ctx := context.Background()
+	ts := oauth2.StaticTokenSource(
+		&oauth2.Token{AccessToken: "ebc1179a5242ac375164f0ecd03103efb3395ecb"},
+	)
+	tc := oauth2.NewClient(ctx, ts)
+	client := github.NewClient(tc)
 
-	client := github.NewClient(nil)
-
-	fmt.Printf("client %+v\n", client)
+	//client := github.NewClient(nil)
 
 	gitService = model.GithubService{
 		Client: client,
@@ -37,6 +45,17 @@ func init() {
 
 func setGitService(mock model.GithubService) {
 	gitService = mock
+}
+
+func setFlag(value bool) {
+	flag = value
+}
+
+func resetGitService(flag bool) {
+	if flag {
+		gitService.Opt = &github.RepositoryListByOrgOptions{ListOptions: github.ListOptions{PerPage: 100}}
+		gitService.Ctx = context.Background()
+	}
 }
 
 // Base is just for minikube deployment
@@ -57,19 +76,20 @@ func Health(w http.ResponseWriter, r *http.Request) {
 
 // GetStars is bussiness logic for /get-stars endpoint
 func GetStars(w http.ResponseWriter, r *http.Request) {
+	fmt.Printf("githubservice %+v\n", gitService)
 	// parse payload
 	var req model.Request
 	decoder := json.NewDecoder(r.Body)
 	if err := decoder.Decode(&req); err != nil {
 		log.Printf("... cannot decode request %v\n", err)
-		utils.RespondWithJSON(w, http.StatusBadRequest, model.Response{Error: err.Error(), Status: failure})
+		utils.RespondWithJSON(w, http.StatusBadRequest, model.Response{Error: []string{err.Error()}, Status: failure})
 		return
 	}
 	defer r.Body.Close()
 
 	if req.Input == nil {
 		log.Printf("... invalid request. Must contain \"input:\" %v", req)
-		utils.RespondWithJSON(w, http.StatusBadRequest, model.Response{Error: "invalid request. Must contain 'input:'", Status: failure})
+		utils.RespondWithJSON(w, http.StatusBadRequest, model.Response{Error: []string{"invalid request. Must contain 'input:'"}, Status: failure})
 		return
 	}
 
@@ -81,14 +101,15 @@ func GetStars(w http.ResponseWriter, r *http.Request) {
 	seenOrgs := make(map[string][]*github.Repository)
 
 	if gitService.Client == nil {
-		utils.RespondWithJSON(w, http.StatusInternalServerError, model.Response{Error: "cannot connect to github", Status: failure})
+		utils.RespondWithJSON(w, http.StatusInternalServerError, model.Response{Error: []string{"cannot connect to github"}, Status: failure})
 		return
 	}
-
+	errorMessageList := make([]string, 0)
 	for _, input := range *req.Input {
 		log.Printf("... check if each element in the format organization/repository")
 		if err := utils.ValidateInput(input); err != nil {
 			log.Printf("%s is not in right format orginazation/repo\n", input)
+			errorMessageList = append(errorMessageList, err.Error())
 			invalidRepos = append(invalidRepos, input)
 			continue
 		}
@@ -97,6 +118,7 @@ func GetStars(w http.ResponseWriter, r *http.Request) {
 		allRepos, ok := seenOrgs[token[0]]
 		if !ok {
 			log.Printf("%s is not seen before\n", token[0])
+			resetGitService(flag) // refresh pagination for each search
 			results, err := utils.ListAllReposForAnOrg(gitService, token[0])
 			if err == nil {
 				allRepos = results
@@ -104,7 +126,8 @@ func GetStars(w http.ResponseWriter, r *http.Request) {
 				log.Printf("...added all repos of %s to cache\n", token[0])
 			} else {
 				log.Printf("Error is %v \n", err)
-				log.Printf("%s is not a valid org\n", token[0])
+				//log.Printf("%s is not a valid org\n", token[0])
+				errorMessageList = append(errorMessageList, err.Error())
 				invalidRepos = append(invalidRepos, input)
 				continue
 			}
@@ -130,7 +153,7 @@ func GetStars(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if len(invalidRepos) != 0 {
-		resp.Error = inputNotValidMessage
+		resp.Error = errorMessageList
 	}
 	log.Println("finished request")
 	log.Printf("Response: %+v\n", resp)
