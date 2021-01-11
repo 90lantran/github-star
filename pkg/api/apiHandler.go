@@ -3,7 +3,6 @@ package api
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"strings"
@@ -69,7 +68,6 @@ func Health(w http.ResponseWriter, r *http.Request) {
 
 // GetStars is bussiness logic for /get-stars endpoint
 func GetStars(w http.ResponseWriter, r *http.Request) {
-	fmt.Printf("githubservice %+v\n", gitService)
 	// parse payload
 	var req model.Request
 	decoder := json.NewDecoder(r.Body)
