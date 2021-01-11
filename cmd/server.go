@@ -17,5 +17,5 @@ type server struct {
 func (s *server) startServer() {
 	s.serverStarted = true
 	router := route.GetRouter()
-	log.Fatal(http.ListenAndServe(":8081", router))
+	log.Fatal(http.ListenAndServe(":8080", router))
 }
