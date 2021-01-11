@@ -9,7 +9,6 @@ import (
 	"strings"
 
 	"github.com/google/go-github/github"
-	"golang.org/x/oauth2"
 
 	"github.com/90lantran/github-star/internal/constants"
 	"github.com/90lantran/github-star/internal/model"
@@ -29,14 +28,8 @@ const (
 func init() {
 	seenOrgs = make(map[string][]*github.Repository)
 	flag = true
-	ctx := context.Background()
-	ts := oauth2.StaticTokenSource(
-		&oauth2.Token{AccessToken: "ebc1179a5242ac375164f0ecd03103efb3395ecb"},
-	)
-	tc := oauth2.NewClient(ctx, ts)
-	client := github.NewClient(tc)
 
-	//client := github.NewClient(nil)
+	client := github.NewClient(nil)
 
 	gitService = model.GithubService{
 		Client: client,
