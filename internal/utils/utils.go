@@ -3,6 +3,7 @@ package utils
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"regexp"
 	"strings"
@@ -34,9 +35,15 @@ func ListAllReposForAnOrg(gitService model.GithubService, orgName string) ([]*gi
 
 	for {
 		repos, resp, err := gitService.Client.Repositories.ListByOrg(gitService.Ctx, orgName, gitService.Opt)
+
 		if err != nil {
+			if _, ok := err.(*github.RateLimitError); ok {
+				log.Println("hit rate limit")
+			}
 			return nil, err
 		}
+		fmt.Printf("Response %v\n", resp)
+
 		allRepos = append(allRepos, repos...)
 		if resp.NextPage == 0 {
 			break
