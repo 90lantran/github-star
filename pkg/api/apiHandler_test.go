@@ -20,11 +20,11 @@ import (
 const (
 	healthExpectedResponse = "{\"message\":\"the server is up!\"}"
 	emptyRequestResponse   = "{\"error\":[\"invalid request. Must contain 'input:'\"],\"status\":\"failure\"}"
-	getStarsResponse       = "{\"payload\":{\"totalStars\":19,\"invalidRepos\":[\"tingo-org/homebrew-tools\",\"tiygo-org\",\"tinygo-org/tinyfnt\"],\"validRepos\":[{\"name\":\"tinygo-org/tinyfont\",\"star(s)\":19}]},\"error\":[\"GET https://api.github.com/orgs/tingo-org/repos?per_page=100: 404 Not Found []\",\"input list tiygo-org is not valid. Valid format is list of organization/repository\"],\"status\":\"success\"}"
+	getStarsResponse       = "{\"payload\":{\"totalStars\":19,\"invalidRepos\":[\"tingo-org/homebrew-tools\",\"tiygo-org\",\"tinygo-org/tinyfnt\"],\"validRepos\":[{\"name\":\"tinygo-org/tinyfont\",\"star(s)\":19}]},\"error\":[\"GET https://api.github.com/orgs/tingo-org/repos?per_page=100: 404 Not Found []\",\"input list tiygo-org is not valid. Valid format is list of organization/repository\",\"tinyfnt is not a valid repo in the organization tinygo-org\"],\"status\":\"success\"}"
 	internalServerResponse = "{\"error\":[\"cannot connect to github\"],\"status\":\"failure\"}"
 	invalidRequestResponse = "{\"error\":[\"json: cannot unmarshal string into Go struct field Request.input of type []string\"],\"status\":\"failure\"}"
 	ratelimitRespons       = "403 API rate limit"
-	notRefeshPagination    = "{\"payload\":{\"totalStars\":874,\"invalidRepos\":[\"twilio/twilio-python\"],\"validRepos\":[{\"name\":\"twitter/rezolus\",\"star(s)\":874}]},\"status\":\"success\"}"
+	notRefeshPagination    = "{\"payload\":{\"totalStars\":874,\"invalidRepos\":[\"twilio/twilio-python\"],\"validRepos\":[{\"name\":\"twitter/rezolus\",\"star(s)\":874}]},\"error\":[\"twilio-python is not a valid repo in the organization twilio\"],\"status\":\"success\"}"
 )
 
 type Route struct {

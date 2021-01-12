@@ -3,11 +3,13 @@ package api
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"strings"
 
 	"github.com/google/go-github/github"
+	"golang.org/x/oauth2"
 
 	"github.com/90lantran/github-star/internal/constants"
 	"github.com/90lantran/github-star/internal/model"
@@ -28,7 +30,12 @@ func init() {
 	seenOrgs = make(map[string][]*github.Repository)
 	flag = true
 
-	client := github.NewClient(nil)
+	ctx := context.Background()
+	ts := oauth2.StaticTokenSource(
+		&oauth2.Token{AccessToken: "Add your access token here"},
+	)
+	tc := oauth2.NewClient(ctx, ts)
+	client := github.NewClient(tc)
 
 	gitService = model.GithubService{
 		Client: client,
@@ -117,7 +124,6 @@ func GetStars(w http.ResponseWriter, r *http.Request) {
 				log.Printf("...added all repos of %s to cache\n", token[0])
 			} else {
 				log.Printf("Error is %v \n", err)
-				//log.Printf("%s is not a valid org\n", token[0])
 				errorMessageList = append(errorMessageList, err.Error())
 				invalidRepos = append(invalidRepos, input)
 				continue
@@ -129,6 +135,7 @@ func GetStars(w http.ResponseWriter, r *http.Request) {
 			totalCount += count
 		} else {
 			log.Printf("%s is not a valid repo in the organization %s \n", token[1], token[0])
+			errorMessageList = append(errorMessageList, fmt.Sprintf("%s is not a valid repo in the organization %s", token[1], token[0]))
 			invalidRepos = append(invalidRepos, input)
 		}
 
